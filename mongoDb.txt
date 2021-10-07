@@ -1,0 +1,226 @@
+                                                Mongo Db
+--------------------------------------------------------------------------------------------------------
+---------------------------------------------insert-----------------------------------------------------
+To check databases
+
+> show dbs
+
+To create db
+>use dbName 
+
+To see Active(current) database
+> db
+
+to drop db
+
+>db.dropDatabase()
+
+To create collection(table)
+
+>db.createCollection('tableName')
+
+to delete collection (table)
+>db.collectionName.drop()
+
+we can create collection and insert values..at a time
+> db.tableName.insertOne({field:value,field:value,.........etc.})
+example-> db.students.insertOne({name:"sunny kosle",branch:"cse",rollNumber:"101"})
+
+To insert multiple collection in table
+> db.insertMany([{field:value},{field:value},{field:value},{field:value},{field:value},{}........etc.])
+example-> db.students.insertOne({name:"sunny kosle",branch:"cse",rollNumber:"101"},
+          {name:"param kosle",branch:"cse",rollNumber:"102"},
+          {name:"sonu kosle",branch:"cse",rollNumber:"103"})
+
+To find documents(rows) in table
+> db.tableName.find()
+
+To find row wise dada in mongo
+> db.tablename.find().pretty()
+
+To find specific document in collection
+db.tableName.find(query,projection)
+> db.tableName.find({name:"sonu"}).pretty()
+output=> {name:"sonu kosle",branch:"cse",rollNumber:"103"}
+
+To find specific field in collection
+db.tableName.find(query,projection)
+> db.tableName.find({name:"sonu"},{name:1}).pretty()
+// 1 means you will get only name field.
+//if we add 0 so it means that it will return all fields except name field. 
+
+output-> { "_id" : ObjectId("6155864fe340757b4fbdfc53"), "name" : "monu kosle", "branch" : "cse", "rollNumber" : 104 }
+But here is also document with id
+
+without id get field
+
+> db.tableName.find({name:"sonu"},{_id:0,name:1}).pretty()
+
+think if we have common field with common key and value so if we want to access
+the field suppose Active:true is field and we have 5 documents but we want only
+Active document where value is true .so what we will do 
+> db.tableName.find({Active:true}).pretty()
+so we will get all fields or documents which we have in collection where value
+true .
+
+so we will use limit() method
+>db.students.find({Active:true}).pretty().limit(1) // we can pass value according our requirement.
+            OR
+> db.students.findOne({Active:true})
+
+If we want to skip some documents and print the specific document so we can use below command.
+>db.students.find({Active:true}).pretty().limit(1).skip(1)
+so we will get skiped 1 document into our collection
+
+-------------------------------------------------Update-------------------------------------
+Update specific field data
+
+> db.students.updateOne({filter},{$set:{key:value}})
+> db.students.updateOne({key:value},{$set:{key:value}})
+example -> 
+>db.students.updateOne({branch:"cse"},{$set:{name:"Abhi kosle"}})
+outputYou will get -> 
+>{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+
+update perticullar row of all data in row
+> db.tbaleName.update({name:'sonu'},
+{
+name:"sunny",
+lang:"english",
+roll:"105"
+}) // it will work if field matched which is given named 'sonu' then it will update the data otherwise data will not update
+if we want to update data if field not mached then we have to change something but make this command will insert the document in your collection
+> db.tbaleName.update({name:'sonu'},
+{
+name:"sunny",
+lang:"english",
+roll:"105"},{upsert:true})
+
+Update multiple field at a time 
+>db.students.updateMany({filter},{$set:{key:value}})
+>db.students.updateMany({key:value},{$set:{key:value}})
+
+example->
+> db.students.updateMany({name:"sunny kosle"},{$set{baranch:"mech"}})
+it will update the values of field where name equals sunny kosle and change the value cse to mech .
+------------------------------------------Delete document-----------------------------------------
+If we want to delete field where branch=cse so we will use
+
+> db.students.deleteOne({branch:"cse"})
+
+and if we want to delete all documents inside our collection so we use
+
+> db.students.deleteMany({})
+
+now your all documents of collection will be deleted
+
+if we want to delete perticular row of our collection
+>db.tableName.remove({name:'sonu'})
+
+-------------------------------------new----------------------------
+to count data in row
+>db.tableName.find().pretty().limit(2).count() // returns the number of fields in document(row)
+>db.tableName.find().pretty().count()
+
+using sort()
+
+>db.tableName().find.sort({name:1}).pretty() // it will return documents in assending order 
+>db.tableName().find.sort({name:-1}).pretty() // it will return documents in deassending order
+
+Update Operator :
+
+increment operator
+>db.tableName.update({name:'sonu'},
+{$inc:{member_since:2
+}}) // it increment the member_since value via 2 . like existing value 2 - increment by 2  2+2=4
+
+rename operator
+>db.tableName.update({name:'sonu'},
+{$rename:{member_since:'member'
+}})  // this command will rename the member_since field by member .
+
+if we want to replace all documents data of collection by member then use this
+>db.tableName.update({},
+{$rename:{member_since:'member'
+}})  // this command will rename the member_since field by member .
+
+
+===============================comparison operator==================================
+less then
+
+>db.tableName.find({member_since:{$lt:90}}) // it will return document less then data which is member_since 90
+>db.tableName.find({member_since:{$gt:90}}) // it is used for greater then data
+
+equal
+>db.tableName.find({age: {$eq :20}}) // this line will print the all rows which is equal to 20 age.
+
+greater than or equal
+>db.tableName.find({age: {$gte :20}})
+
+less than our equalto
+>db.tableName.find({age: {$lte :20}})
+
+$in 
+>db.tableName.find({age: {$in:[24,21]}}) // it will return the matching value from the collection 24 or 25 relavent.
+
+for check name
+>db.tableName.find({name: {$in:["sonu"]}}) // it will return document relavent to "sonu" named.
+
+multiple name
+>db.tableName.find({name: {$in:["sonu","sunny"]}}) // it will return document relavent to "sonu" and "sunny" named.
+
+$nin // means not in it will return opposite result which is not exist given name
+>db.tableName.find({name: {$in:["sonu","sunny"]}})// it will return documents except the "sonu and "sunny" named.
+
+=============================Logical Operator===================================
+
+$and  //it is return true if all condition would satisfied other wise it will return false
+>db.tableName.find({$and : [ {name:"sonu"} ,{age:25} ]}) // this command will return the document which name is sonu and age=25 otherwise it will not return anything.
+
+$or  //it is return true if any one condition would satisfied otherwise it will return false. 
+>db.tableName.find({$and : [ {name:"sonu"} ,{age:25} ]})// atleast any one condition will be satisfied.
+
+{$not: {$lt:25}}//not less than
+>db.tableName.find({age : {$not : {$lt : 25}}}) // it will return all the documents which age is not greater than 25
+
+{$not: {$gt:25}}//not less than // not greater than
+>db.tableName.find({age : {$not : {$gt : 25}}}) //it will return all the documents which age is not greater than 25
+          or
+>db.tableName.find({age : {$lt : 25}}})
+
+======query and projection======
+if we want to find any specific field data then we use query and projection command .
+
+>db.tableName.find({name:{$eq:"sonu"}},{class:1})// so here we will see the _id field and class field only (here class :1 means class will show if we mentioned 0 so it means that we dont want class filed data so we will see only Id field and name field)
+
+>db.tableName.find({name:{$eq:"sonu"}},{class:0, _id:0})// now it will return only name field.
+
+>db.tableName.find({name:{$eq:"sonu"}},{class:1, _id:0})// now it will return only class.
+>db.tbaleName.find({_id:1},{comments:1})// it will show all the comments indisde the table including _id field.
+>db.tbaleName.find({_id:1},{comments:1},{_id:0})// here id will not show in the document.
+
+==========count()===============
+>db.tableName.find().count() // it will return all the documents of collection 
+db.tableName.find({age:{$gt:25}}).count() // it will return the documents whome age is greater than 25
+
+sort() method 
+
+>db.TableName.find().sort({class:1}) // it means assending order
+>db.TableName.find().sort({class:-1}) // it means dassending order
+>db.TbaleName.find().limit(2) // it will return only 2 documents rest of documents 
+>db.TbaleName.find().sort({class:1}).limit(2)// it will return assanding order
+
+
+===========================================================================
+
+mongodb atlas : link to connect cloud
+
+
+mongo db uri :- connect
+
+mongodb+srv://Sunnykosle:Sonu%4012345@cluster0.kmxo9.mongodb.net/test
+
+
+
+
+
