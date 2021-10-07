@@ -221,9 +221,6 @@ mongo db uri :- connect
 mongodb+srv://Sunnykosle:Sonu%4012345@cluster0.kmxo9.mongodb.net/test
 
 
-hello sonu
-
-
 
 
 
